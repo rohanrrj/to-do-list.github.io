@@ -5,6 +5,7 @@ taskBox = document.querySelector(".task-box");
 
 let editId,
 isEditTask = false,
+    //getting localstorage todo list
 todos = JSON.parse(localStorage.getItem("todo-list"));
 
 filters.forEach(btn => {
@@ -21,6 +22,9 @@ function showTodo(filter) {
     let liTag = "";
     if(todos) {
         todos.forEach((todo, id) => {
+            
+            //if todo status is completed , set the iscomplete value to checked
+            
             let completed = todo.status == "completed" ? "checked" : "";
             if(filter == todo.status || filter == "all") {
                 liTag += `<li class="task">
@@ -39,6 +43,8 @@ function showTodo(filter) {
             }
         });
     }
+    // if li isn't empty insert this value inside task else insert span
+    
     taskBox.innerHTML = liTag || `<span>0 task left</span>`;
     let checkTask = taskBox.querySelectorAll(".task");
     !checkTask.length ? clearAll.classList.remove("active") : clearAll.classList.add("active");
@@ -47,9 +53,15 @@ function showTodo(filter) {
 showTodo("all");
 
 function showMenu(selectedTask) {
+    
+    // getting task menu div
+    
     let menuDiv = selectedTask.parentElement.lastElementChild;
     menuDiv.classList.add("show");
     document.addEventListener("click", e => {
+        
+        //removing show class from the task menu on the document click
+        
         if(e.target.tagName != "I" || e.target != selectedTask) {
             menuDiv.classList.remove("show");
         }
@@ -57,12 +69,20 @@ function showMenu(selectedTask) {
 }
 
 function updateStatus(selectedTask) {
+    
+    //getting paragraph that contains task name
+    
     let taskName = selectedTask.parentElement.lastElementChild;
     if(selectedTask.checked) {
         taskName.classList.add("checked");
+        
+        //updating the status of selected task to completed
+        
         todos[selectedTask.id].status = "completed";
+        
     } else {
         taskName.classList.remove("checked");
+        //updating the status of selected task to pending
         todos[selectedTask.id].status = "pending";
     }
     localStorage.setItem("todo-list", JSON.stringify(todos))
@@ -77,6 +97,9 @@ function editTask(taskId, textName) {
 }
 
 function deleteTask(deleteId, filter) {
+    
+    //removing selected task from array/ to do list
+    
     isEditTask = false;
     todos.splice(deleteId, 1);
     localStorage.setItem("todo-list", JSON.stringify(todos));
@@ -84,6 +107,9 @@ function deleteTask(deleteId, filter) {
 }
 
 clearAll.addEventListener("click", () => {
+    
+    //removing selected task from array/todo list
+    
     isEditTask = false;
     todos.splice(0, todos.length);
     localStorage.setItem("todo-list", JSON.stringify(todos));
@@ -92,11 +118,15 @@ clearAll.addEventListener("click", () => {
 
 taskInput.addEventListener("keyup", e => {
     let userTask = taskInput.value.trim();
-    if(e.key == "Enter" && userTask) {
-        if(!isEditTask) {
+    if(e.key == "Enter" && userTask) {  //getting localstorage todo list
+        
+        if(!isEditTask) { // if isEditTask isn,t true
+            
             todos = !todos ? [] : todos;
             let taskInfo = {name: userTask, status: "pending"};
-            todos.push(taskInfo);
+            
+            todos.push(taskInfo);     //adding new task to todo list
+      
         } else {
             isEditTask = false;
             todos[editId].name = userTask;
